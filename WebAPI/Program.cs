@@ -8,7 +8,9 @@ using Newtonsoft.Json.Serialization;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.WebHost.UseKestrel(options => { options.ListenAnyIP(4000); options.ListenAnyIP(4001, listenOptions => listenOptions.UseHttps()); });
+var portVar = Environment.GetEnvironmentVariable("PORT");
+if (portVar is ({ Length: > 0 }) && int.TryParse(portVar, out int port))
+    builder.WebHost.UseKestrel(options => { options.ListenAnyIP(port); });
 builder.Services.AddDbContext<ApplicationDbContext>();
 builder.Services.AddCors();
 builder.Services.AddControllers()
