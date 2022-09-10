@@ -1,23 +1,10 @@
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
+FROM mcr.microsoft.com/dotnet/sdk:6.0 as build
 WORKDIR /app
-
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
-WORKDIR /src
-COPY ["WebAPI/WebAPI.csproj", "WebAPI/"]
-COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
-COPY ["Domain/Domain.csproj", "Domain/"]
-COPY ["Application/Application.csproj", "Application/"]
-RUN dotnet restore "WebAPI/WebAPI.csproj"
 COPY . .
-WORKDIR "/src/WebAPI"
-RUN dotnet build "WebAPI.csproj" -c Release -o /app/build 
+RUN dotnet restore
+RUN dotnet publish -o /app/published-app
 
-FROM build AS publish
-RUN dotnet publish "WebAPI.csproj" -c Release -o /app/publish /p:EnvironmentName=Production
-
-FROM base AS final
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 as runtime
 WORKDIR /app
-EXPOSE 80
-EXPOSE 443
-COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "WebAPI.dll","--environment=Production"]
+COPY --from=build /app/published-app /app
+ENTRYPOINT [ "dotnet", "/app/WebAPI.dll" ]
