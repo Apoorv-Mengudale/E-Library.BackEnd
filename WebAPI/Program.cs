@@ -25,11 +25,10 @@ builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
         {
-            options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+            options.SwaggerDoc("v1", new OpenApiInfo
             {
                 Title = "API",
-                Version = "v2",
-                Description = "Your Api Description"
+                Version = "v1",
             });
             options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
