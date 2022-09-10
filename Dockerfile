@@ -5,7 +5,7 @@ COPY ["WebAPI/*.csproj", "WebAPI/"]
 COPY ["Infrastructure/*.csproj", "Infrastructure/"]
 COPY ["Domain/*.csproj", "Domain/"]
 COPY ["Application/*.csproj", "Application/"]
-RUN dotnet restore "WebAPI/*.csproj"
+RUN dotnet restore "WebAPI/WebAPI.csproj"
 
 COPY . .
 WORKDIR "/app/WebAPI"
