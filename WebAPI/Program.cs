@@ -8,6 +8,7 @@ using Newtonsoft.Json.Serialization;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.WebHost.UseKestrel(options => { options.ListenAnyIP(4000); options.ListenAnyIP(4001, listenOptions => listenOptions.UseHttps()); });
 builder.Services.AddDbContext<ApplicationDbContext>();
 builder.Services.AddCors();
 builder.Services.AddControllers()
@@ -89,5 +90,5 @@ app.UseMiddleware<JwtMiddleware>();
 app.MapControllers();
 
 
-app.Run("http://localhost:8080");
+app.Run();
 
