@@ -9,14 +9,14 @@ namespace Infrastructure.Repository
     {
         #region property
         private readonly ApplicationDbContext _applicationDbContext;
-        private DbSet<T> entities;
+        private readonly DbSet<T> _entities;
         #endregion
 
         #region Constructor
         public Repository(ApplicationDbContext applicationDbContext)
         {
             _applicationDbContext = applicationDbContext;
-            entities = _applicationDbContext.Set<T>();
+            _entities = _applicationDbContext.Set<T>();
         }
         #endregion
 
@@ -24,29 +24,29 @@ namespace Infrastructure.Repository
         {
             if (entity == null)
             {
-                throw new ArgumentNullException("entity");
+                throw new ArgumentNullException(nameof(entity));
             }
-            entities.Remove(entity);
+            _entities.Remove(entity);
             _applicationDbContext.SaveChanges();
         }
 
-        public T Get(int Id)
+        public T Get(int id)
         {
-            return entities.SingleOrDefault(c => c.Id == Id);
+            return _entities.SingleOrDefault(c => c.Id == id);
         }
 
         public IEnumerable<T> GetAll()
         {
-            return entities.AsEnumerable();
+            return _entities.AsEnumerable();
         }
 
         public void Insert(T entity)
         {
             if (entity == null)
             {
-                throw new ArgumentNullException("entity");
+                throw new ArgumentNullException(nameof(entity));
             }
-            entities.Add(entity);
+            _entities.Add(entity);
             _applicationDbContext.SaveChanges();
         }
 
@@ -54,9 +54,9 @@ namespace Infrastructure.Repository
         {
             if (entity == null)
             {
-                throw new ArgumentNullException("entity");
+                throw new ArgumentNullException(nameof(entity));
             }
-            entities.Remove(entity);
+            _entities.Remove(entity);
         }
 
         public void SaveChanges()
@@ -68,9 +68,9 @@ namespace Infrastructure.Repository
         {
             if (entity == null)
             {
-                throw new ArgumentNullException("entity");
+                throw new ArgumentNullException(nameof(entity));
             }
-            entities.Update(entity);
+            _entities.Update(entity);
             _applicationDbContext.SaveChanges();
         }
 

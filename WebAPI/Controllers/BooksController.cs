@@ -1,9 +1,8 @@
 using Application.Authorization;
 using Application.Services;
-using AutoMapper;
 using Domain.Models;
+using Domain.Models.Books;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 
 namespace WebAPI.Controllers
 {
@@ -12,14 +11,12 @@ namespace WebAPI.Controllers
     [Route("api/[controller]")]
     public class BooksController : ControllerBase
     {
-        private IBookService _bookService;
-        private IMapper _mapper;
+        private readonly IBookService _bookService;
+
         public BooksController(
-            IBookService bookService,
-            IMapper mapper)
+            IBookService bookService)
         {
             _bookService = bookService;
-            _mapper = mapper;
         }
 
         [Authorize(Role.Staff)]
@@ -30,21 +27,21 @@ namespace WebAPI.Controllers
             return Ok(users);
         }
 
-        [HttpGet("GetById/{id}")]
+        [HttpGet($"GetById/{{id:int}}")]
         public IActionResult GetById(int id)
         {
             var user = _bookService.GetById(id);
             return Ok(user);
         }
 
-        [HttpPost("addBook")]
+        [HttpPost($"addBook")]
         public IActionResult Register(Book model)
         {
             _bookService.Register(model);
             return Ok(new { message = "Book added successfully" });
         }
 
-        [HttpPut("{id}")]
+        [HttpPut($"{{id:int}}")]
         public IActionResult Update(int id, UpdateBookRequest model)
         {
             _bookService.Update(id, model);
@@ -62,7 +59,7 @@ namespace WebAPI.Controllers
         [HttpGet("GetBooksPaginated")]
         public IActionResult GetBooksPaginated(int pageNumber, int pageSize, string? searchText)
         {
-            if (searchText == null) searchText = "";
+            searchText ??= "";
             var res = _bookService._GetBooksPaginated(pageNumber, pageSize, searchText);
             return Ok(new { data = res, totalCount = _bookService.GetAll().Count() });
         }

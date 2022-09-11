@@ -6,10 +6,10 @@ namespace Domain
 {
     public class ApplicationDbContext : DbContext
     {
-        protected readonly IConfiguration Configuration;
+        private readonly IConfiguration _configuration;
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IConfiguration configuration) : base(options)
         {
-            Configuration = configuration;
+            _configuration = configuration;
         }
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -18,7 +18,7 @@ namespace Domain
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
-            options.UseNpgsql(Configuration.GetConnectionString("Database"));
+            options.UseNpgsql(_configuration.GetConnectionString("Database"));
         }
 
         public DbSet<User> Users { get; set; }

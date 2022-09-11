@@ -1,7 +1,8 @@
-using Application.Authorization;
 using AutoMapper;
 using Domain;
 using Domain.Models;
+using Domain.Models.Books;
+
 namespace Application.Services
 {
     public interface IBookService
@@ -16,17 +17,14 @@ namespace Application.Services
 
     public class BookService : IBookService
     {
-        private ApplicationDbContext _context;
-        private IJwtUtils _jwtUtils;
+        private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
 
         public BookService(
             ApplicationDbContext context,
-            IJwtUtils jwtUtils,
             IMapper mapper)
         {
             _context = context;
-            _jwtUtils = jwtUtils;
             _mapper = mapper;
         }
 
@@ -37,55 +35,55 @@ namespace Application.Services
 
         public Book GetById(int id)
         {
-            return getBook(id);
+            return GetBook(id);
         }
 
         public void Register(Book model)
         {
             // map model to new Book object
-            var Book = _mapper.Map<Book>(model);
+            var book = _mapper.Map<Book>(model);
 
             // save Book
-            _context.Books.Add(Book);
+            _context.Books.Add(book);
             _context.SaveChanges();
         }
 
         public void Update(int id, UpdateBookRequest model)
         {
-            var Book = getBook(id);
+            var book = GetBook(id);
 
             // copy model to Book and save
-            _mapper.Map(model, Book);
-            _context.Books.Update(Book);
+            _mapper.Map(model, book);
+            _context.Books.Update(book);
             _context.SaveChanges();
         }
 
         public void Delete(int id)
         {
-            var Book = getBook(id);
-            _context.Books.Remove(Book);
+            var book = GetBook(id);
+            _context.Books.Remove(book);
             _context.SaveChanges();
         }
 
         // helper methods
 
-        private Book getBook(int id)
+        private Book GetBook(int id)
         {
-            var Book = _context.Books.Find(id);
-            if (Book == null) throw new KeyNotFoundException("Book not found");
-            return Book;
+            var book = _context.Books.Find(id);
+            if (book == null) throw new KeyNotFoundException("Book not found");
+            return book;
         }
 
         public IEnumerable<Book> _GetBooksPaginated(int pageNumber, int pageSize, string? searchText)
         {
             if (pageNumber == 0) pageNumber = 1;
-            if (searchText.Length != 0) searchText = searchText.ToLower();
+            if (!string.IsNullOrEmpty(searchText)) searchText = searchText.ToLower();
             return _context.Books
             .Where(
-                a => a.BookName.ToLower().Contains(searchText) ||
-                 a.AuthorName.ToLower().Contains(searchText) ||
-                  a.IntrestedArea.ToLower().Contains(searchText) ||
-                   a.YearOfIssue.ToString().Contains(searchText))
+                a => searchText != null && (a.BookName.ToLower().Contains(searchText) ||
+                                            a.AuthorName.ToLower().Contains(searchText) ||
+                                            a.IntrestedArea.ToLower().Contains(searchText) ||
+                                            a.YearOfIssue.ToString().Contains(searchText)))
                    .Skip((pageNumber - 1) * pageSize).Take(pageSize).OrderBy(x => x.Id);
         }
 

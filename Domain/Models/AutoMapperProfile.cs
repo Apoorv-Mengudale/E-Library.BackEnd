@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Domain.Models.Books;
 using Domain.Models.Users;
 
 namespace Domain.Models
@@ -20,9 +21,7 @@ namespace Domain.Models
                     {
                         // ignore null & empty string properties
                         if (prop == null) return false;
-                        if (prop.GetType() == typeof(string) && string.IsNullOrEmpty((string)prop)) return false;
-
-                        return true;
+                        return prop is not string arg3 || !string.IsNullOrEmpty(arg3);
                     }
                 ));
 
@@ -32,9 +31,7 @@ namespace Domain.Models
                     {
                         // ignore null & empty string properties
                         if (prop == null) return false;
-                        if (prop.GetType() == typeof(string) && string.IsNullOrEmpty((string)prop)) return false;
-
-                        return true;
+                        return prop is not string arg3 || !string.IsNullOrEmpty(arg3);
                     }
                 ));
         }

@@ -1,10 +1,8 @@
 ﻿using Application.Authorization;
 using Application.Services;
-using AutoMapper;
 using Domain.Models;
 using Domain.Models.Users;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 
 namespace WebAPI.Controllers
 {
@@ -13,18 +11,12 @@ namespace WebAPI.Controllers
     [Route("api/[controller]")]
     public class UsersController : ControllerBase
     {
-        private IUserService _userService;
-        private IMapper _mapper;
-        private readonly AppSettings _appSettings;
+        private readonly IUserService _userService;
 
         public UsersController(
-            IUserService userService,
-            IMapper mapper,
-            IOptions<AppSettings> appSettings)
+            IUserService userService)
         {
             _userService = userService;
-            _mapper = mapper;
-            _appSettings = appSettings.Value;
         }
 
         [AllowAnonymous]
@@ -52,21 +44,21 @@ namespace WebAPI.Controllers
         }
 
         [Authorize(Role.Admin)]
-        [HttpGet("GetById/{id}")]
+        [HttpGet($"GetById/{{id:int}}")]
         public IActionResult GetById(int id)
         {
             var user = _userService.GetById(id);
             return Ok(user);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut($"{{id:int}}")]
         public IActionResult Update(int id, UpdateRequest model)
         {
             _userService.Update(id, model);
             return Ok(new { message = "User updated successfully" });
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete($"{{id:int}}")]
         public IActionResult Delete(int id)
         {
             _userService.Delete(id);
